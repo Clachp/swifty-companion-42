@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "swifty-companion-42",
-    "slug": "swifty-companion-42",
+    "name": "swifty-companion",
+    "slug": "swifty-companion",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "swiftycompanion42",
+    "scheme": "swiftycompanion",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -38,7 +38,8 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
