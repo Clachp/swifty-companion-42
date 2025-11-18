@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native';
+import SearchInput from '@/components/SearchInput';
+import { StyleSheet, View } from 'react-native';
 
 export default function AboutScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>About screen</Text>
+      <SearchInput></SearchInput>
     </View>
   );
 }
