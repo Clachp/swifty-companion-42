@@ -6,6 +6,17 @@ export default function RootLayout() {
     <AuthProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="profile/[profile]"
+          options={{
+            headerShown: true,
+            headerStyle: {
+              backgroundColor: '#25292e',
+            },
+            headerTintColor: '#fff',
+            headerTitle: 'Profile'
+          }}
+        />
       </Stack>
     </AuthProvider>
   );
