@@ -13,7 +13,6 @@ class Api42Service {
       timeout: 10000,
     });
 
-    // Intercepteur : ajouter le token à chaque requête
     this.client.interceptors.request.use(
       async (config) => {
         const token = await authService.getValidToken();
@@ -25,16 +24,13 @@ class Api42Service {
       }
     );
 
-    // Intercepteur : gérer les erreurs
     this.client.interceptors.response.use(
       (response) => response,
       async (error: AxiosError) => {
         if (error.response?.status === 401) {
-          // Token invalide, on nettoie et on réessaie
-          console.log('⚠️ Token invalide, nouvelle authentification...');
           await authService.clearTokens();
           const token = await authService.getValidToken();
-          
+
           if (error.config) {
             error.config.headers.Authorization = `Bearer ${token}`;
             return this.client.request(error.config);
@@ -45,26 +41,22 @@ class Api42Service {
     );
   }
 
-  /**
-   * Récupère les informations d'un utilisateur par son login
-   */
-  async getUserByLogin(login: string): Promise<User42> {
+  async getCurrentUser(): Promise<User42> {
     try {
-      console.log(`🔍 Recherche de l'utilisateur: ${login}`);
-      const response = await this.client.get<User42>(`/users/${login}`);
-      console.log('✅ Utilisateur trouvé !');
+      const response = await this.client.get<User42>(`/me`);
+      console.log(response.data);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
-      
+
       if (axiosError.response?.status === 404) {
         throw this.createError('Utilisateur non trouvé', 404);
       }
-      
+
       if (!axiosError.response) {
         throw this.createError('Erreur de connexion réseau', 0);
       }
-      
+
       throw this.createError(
         'Erreur lors de la récupération des données',
         axiosError.response.status
@@ -72,9 +64,28 @@ class Api42Service {
     }
   }
 
-  /**
-   * Recherche des utilisateurs (pour autocomplete futur)
-   */
+  async getUserByLogin(login: string): Promise<User42> {
+    try {
+      const response = await this.client.get<User42>(`/users/${login}`);
+      return response.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response?.status === 404) {
+        throw this.createError('Utilisateur non trouvé', 404);
+      }
+
+      if (!axiosError.response) {
+        throw this.createError('Erreur de connexion réseau', 0);
+      }
+
+      throw this.createError(
+        'Erreur lors de la récupération des données',
+        axiosError.response.status
+      );
+    }
+  }
+
   async searchUsers(query: string, perPage: number = 10): Promise<User42[]> {
     try {
       const response = await this.client.get<User42[]>('/users', {
@@ -85,7 +96,7 @@ class Api42Service {
       });
       return response.data;
     } catch (error) {
-      console.error('❌ Erreur de recherche:', error);
+      console.error('Erreur de recherche:', error);
       return [];
     }
   }

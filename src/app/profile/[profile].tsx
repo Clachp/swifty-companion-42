@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { useLocalSearchParams, Stack } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Api42Service from '@/services/Api42Service';
-import { User42 } from '@/types/api.types';
+import Api42Service from '@/src/services/Api42Service';
+import { User42 } from '@/src/types/api.types';
 
 export default function ProfileScreen() {
   const { profile } = useLocalSearchParams<{ profile: string }>();
@@ -35,7 +35,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#ffd33d" />
+        <ActivityIndicator size="large" color="#61dafb" />
       </View>
     );
   }
@@ -68,7 +68,7 @@ export default function ProfileScreen() {
         {mainCursus && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
-              <Ionicons name="school" size={20} color="#ffd33d" /> Cursus Progress
+              <Ionicons name="school" size={20} color="#61dafb" /> Cursus Progress
             </Text>
             <View style={styles.card}>
               <View style={styles.row}>
@@ -99,12 +99,12 @@ export default function ProfileScreen() {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>
-            <Ionicons name="information-circle" size={20} color="#ffd33d" /> Information
+            <Ionicons name="information-circle" size={20} color="#61dafb" /> Information
           </Text>
           <View style={styles.card}>
             <View style={styles.row}>
               <Text style={styles.label}>Wallet:</Text>
-              <Text style={styles.value}>{user.wallet} ³</Text>
+              <Text style={styles.value}>{user.wallet} â‚³</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Correction Points:</Text>
@@ -128,26 +128,31 @@ export default function ProfileScreen() {
         {mainCursus && mainCursus.skills.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
-              <Ionicons name="trophy" size={20} color="#ffd33d" /> Skills
+              <Ionicons name="trophy" size={20} color="#61dafb" /> Skills
             </Text>
             <View style={styles.card}>
               {mainCursus.skills
                 .sort((a, b) => b.level - a.level)
                 .slice(0, 10)
-                .map((skill) => (
-                  <View key={skill.id} style={styles.skillRow}>
-                    <Text style={styles.skillName}>{skill.name}</Text>
-                    <View style={styles.skillBar}>
-                      <View
-                        style={[
-                          styles.skillBarFill,
-                          { width: `${Math.min(skill.level * 5, 100)}%` }
-                        ]}
-                      />
-                      <Text style={styles.skillLevel}>{skill.level.toFixed(2)}</Text>
+                .map((skill) => {
+                  const percentage = Math.min(skill.level * 5, 100);
+                  return (
+                    <View key={skill.id} style={styles.skillRow}>
+                      <Text style={styles.skillName}>{skill.name}</Text>
+                      <View style={styles.skillBar}>
+                        <View
+                          style={[
+                            styles.skillBarFill,
+                            { width: `${percentage}%` }
+                          ]}
+                        />
+                        <Text style={styles.skillLevel}>
+                          {skill.level.toFixed(2)} ({percentage.toFixed(0)}%)
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                ))}
+                  );
+                })}
             </View>
           </View>
         )}
@@ -155,7 +160,7 @@ export default function ProfileScreen() {
         {user.projects_users.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
-              <Ionicons name="briefcase" size={20} color="#ffd33d" /> Projects
+              <Ionicons name="briefcase" size={20} color="#61dafb" /> Projects
             </Text>
             <View style={styles.card}>
               {user.projects_users
@@ -223,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     marginBottom: 16,
     borderWidth: 3,
-    borderColor: '#ffd33d',
+    borderColor: '#61dafb',
   },
   name: {
     color: '#fff',
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   login: {
-    color: '#ffd33d',
+    color: '#61dafb',
     fontSize: 18,
     marginBottom: 4,
   },
@@ -293,7 +298,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: '#ffd33d',
+    backgroundColor: '#61dafb',
     borderRadius: 12,
   },
   skillLevel: {

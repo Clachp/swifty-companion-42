@@ -1,5 +1,5 @@
+import { User42 } from '@/src/types/api.types';
 import { Image, StyleSheet, Text, View } from 'react-native';
-import { User42 } from '@/types/api.types';
 
 type Props = {
   user: User42;

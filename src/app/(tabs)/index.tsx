@@ -1,25 +1,25 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-import Api42Service from '@/services/Api42Service';
-import { User42 } from '@/types/api.types';
-import { useAuth } from '@/contexts/AuthContext';
+import Api42Service from '@/src/services/Api42Service';
+import { User42 } from '@/src/types/api.types';
 
-import Button from '@/components/Button';
-import ProfileCard from '@/components/ProfileCard';
-import SearchInput from '@/components/SearchInput';
+import Button from '@/src/components/Button';
+import ProfileCard from '@/src/components/ProfileCard';
+import SearchInput from '@/src/components/SearchInput';
 
-export default function Index() {
-  const { isAuthenticated, login } = useAuth();
+export default function IndexScreen() {
   const router = useRouter();
   const [searchedUser, setSearchedUser] = useState<User42 | null>(null);
   const [searchError, setSearchError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const searchUser = async (login: string) => {
     try {
       setSearchError('');
       setSearchedUser(null);
+      setIsLoading(true);
 
       const user = await Api42Service.getUserByLogin(login);
       setSearchedUser(user);
@@ -39,22 +39,31 @@ export default function Index() {
       }
 
       setSearchedUser(null);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   const viewProfile = () => {
     if (searchedUser) {
-      router.push(`/profile/${searchedUser.login}`);
+      router.push({
+        pathname: '/profile/[profile]',
+        params: { profile: searchedUser.login }
+      });
     }
   }
 
   return (
     <View style={styles.container}>
-    {isAuthenticated ? (
-      <View style={styles.imageContainer}>
+        <Text style={styles.welcomeText}>Welcome! Search for a 42 profile</Text>
         <SearchInput onPress={searchUser} error={searchError}></SearchInput>
-
-        {searchedUser && (
+        {isLoading && (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#fff" />
+            <Text style={styles.loadingText}>Searching profile...</Text>
+          </View>
+        )}
+        {!isLoading && searchedUser && (
           <View style={styles.section}>
             <ProfileCard user={searchedUser} />
             <Button
@@ -64,13 +73,6 @@ export default function Index() {
             />
           </View>
         )}
-      </View>
-    ) : (
-      <View style={styles.footerContainer}>
-        <Button label="Login" theme='primary' onPress={login}/>
-        <Text style={styles.text}>Connect to your 42 account</Text>
-      </View>
-    )}
     </View>
   );
 }
@@ -80,20 +82,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#25292e',
     alignItems: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-  imageContainer: {
-    flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
     paddingHorizontal: 20,
   },
-  footerContainer: {
-    flex: 1 / 3,
+  imageContainer: {
+    flex: 1,
     alignItems: 'center',
+
+  },
+  welcomeText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '600',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  loaderContainer: {
+    marginVertical: 30,
+    alignItems: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
   },
   section: {
     marginVertical: 20,
