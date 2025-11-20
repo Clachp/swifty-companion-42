@@ -8,9 +8,6 @@ export default function Logout() {
     const [showModal, setShowModal] = useState(false);
 
     const handleLogout = () => {
-        console.log('logout pressed');
-
-        // Sur iOS/Android, utiliser Alert natif
         if (Platform.OS !== 'web') {
             Alert.alert(
                 'Logout',
@@ -30,7 +27,6 @@ export default function Logout() {
                 ]
             );
         } else {
-            // Sur web, utiliser un Modal personnalisé
             setShowModal(true);
         }
     };

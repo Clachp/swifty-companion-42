@@ -1,155 +1,194 @@
 # Swifty Companion
 
-Application mobile React Native pour consulter les profils d'étudiants de l'école 42.
+A React Native mobile application for browsing 42 school student profiles.
 
-## Fonctionnalités
+## Features
 
-- ✅ Authentification OAuth avec l'API 42
-- ✅ Recherche de profils par login
-- ✅ Affichage des informations détaillées (email, wallet, points de correction, etc.)
-- ✅ Visualisation des skills avec niveaux et pourcentages
-- ✅ Liste des projets réussis et échoués
-- ✅ Navigation fluide entre les pages
-- ✅ Gestion des erreurs (login non trouvé, erreur réseau, etc.)
-- ✅ Design responsive et moderne
+- OAuth authentication with 42 API
+- Profile search by login
+- Display detailed information (email, wallet, correction points, etc.)
+- Skill visualization with levels and percentages
+- List of completed and failed projects
+- Smooth navigation between pages
+- Error handling (login not found, network errors, etc.)
+- Responsive and modern design
 
-## Prérequis
+## Prerequisites
 
-- Node.js (v18 ou supérieur)
-- npm ou yarn
+- Node.js (v18 or higher)
+- npm or yarn
 - Expo CLI
-- Un compte 42 avec une application OAuth configurée
+- A 42 account with a configured OAuth application
 
 ## Installation
 
-### 1. Cloner le projet
+### 1. Clone the project
 
 ```bash
-git clone <url-du-repo>
+git clone <repo-url>
 cd ft-swifty-companion
 ```
 
-### 2. Installer les dépendances
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 3. Configurer l'application OAuth 42
+### 3. Configure the 42 OAuth application
 
-1. Allez sur [https://profile.intra.42.fr/oauth/applications](https://profile.intra.42.fr/oauth/applications)
-2. Créez une nouvelle application ou éditez une existante
-3. Configurez les **Redirect URIs** suivants :
+1. Go to [https://profile.intra.42.fr/oauth/applications](https://profile.intra.42.fr/oauth/applications)
+2. Create a new application or edit an existing one
+3. Configure the following **Redirect URIs** (to support all environments):
    ```
-   swiftycompanion://
-   exp://localhost:8081
+   swiftycompanion://redirect
+   exp://localhost:8081/--/redirect
    http://localhost:8081
+   https://auth.expo.io/@your-username/swifty-companion
    ```
-4. Notez votre `Client ID` et `Client Secret`
+   **Important:** Replace `your-username` with your Expo username for the last URI (required for tunnel mode on 42 network)
+4. Note your `Client ID` and `Client Secret`
 
-### 4. Configurer les variables d'environnement
+### 4. Configure environment variables
 
-Créez un fichier `.env` à la racine du projet :
+Create a `.env` file at the project root:
 
 ```bash
 cp .env.example .env
 ```
 
-Éditez le fichier `.env` et ajoutez vos credentials :
+Edit the `.env` file and add your credentials:
 
 ```env
-API_UID=votre_client_id
-API_SECRET=votre_client_secret
+API_UID=your_client_id
+API_SECRET=your_client_secret
 ```
 
-### 5. Lancer l'application
+### 5. Start the application
+
+#### Local mode (standard development)
 
 ```bash
 npx expo start
 ```
 
-Choisissez ensuite votre plateforme :
-- Appuyez sur `i` pour iOS Simulator
-- Appuyez sur `a` pour Android Emulator
-- Scannez le QR code avec Expo Go (mobile)
+Then choose your platform:
+- Press `i` for iOS Simulator
+- Press `a` for Android Emulator
+- Scan the QR code with Expo Go (mobile)
 
-## Configuration OAuth
+#### Tunnel mode (42 network or restricted networks)
 
-### Redirect URIs expliqués
+If you are on the 42 school network or a network with restrictions, use tunnel mode:
 
-L'application utilise différents redirect URIs selon l'environnement :
+```bash
+npx expo start --tunnel
+```
 
-- **`swiftycompanion://`** : Pour l'app native compilée (iOS/Android)
-- **`exp://localhost:8081`** : Pour Expo Go en développement
-- **`http://localhost:8081`** : Pour le web en développement
+**Specific configuration for tunnel:**
 
-Le redirect URI est automatiquement généré par `expo-auth-session` en fonction de l'environnement d'exécution.
+1. Launch the app with `npx expo start --tunnel`
+2. Expo will display a URL like: `exp://abc-123.anonymous.swifty-companion.exp.direct:80`
+3. Add this additional redirect URI in your 42 application:
+   ```
+   https://auth.expo.io/@your-username/swifty-companion
+   ```
+   Replace `your-username` with your Expo username (visible in the output of `npx expo start`)
 
-### Schéma de l'app
+**Important note:** Tunnel mode uses a tunnel service managed by Expo (similar to ngrok) to create a public URL accessible from any network. The redirect URI `https://auth.expo.io/@your-username/swifty-companion` is the standardized URL that Expo Auth Session uses to handle OAuth return in tunnel mode.
 
-Le schéma `swiftycompanion` est défini dans `app.config.js` :
+## OAuth Configuration
+
+### Redirect URIs explained
+
+The application uses different redirect URIs depending on the environment:
+
+**For local development (normal network):**
+- **`swiftycompanion://redirect`**: For compiled native app (iOS/Android)
+- **`exp://localhost:8081/--/redirect`**: For Expo Go in local development
+- **`http://localhost:8081`**: For web in development
+
+**For development with tunnel (42 network):**
+- **`https://auth.expo.io/@your-username/swifty-companion`**: For Expo Go with tunnel mode
+  - Replace `your-username` with your Expo username
+  - Example: `https://auth.expo.io/@johndoe/swifty-companion`
+
+The redirect URI is automatically generated by `expo-auth-session` based on the runtime environment.
+
+**Complete configuration in your 42 application:**
+
+To support all environments, add all these redirect URIs in your 42 application:
+```
+swiftycompanion://redirect
+exp://localhost:8081/--/redirect
+http://localhost:8081
+https://auth.expo.io/@your-username/swifty-companion
+```
+
+### App scheme
+
+The `swiftycompanion` scheme is defined in `app.config.js`:
 
 ```javascript
 scheme: "swiftycompanion"
 ```
 
-Ce schéma permet à l'API 42 de rediriger l'utilisateur vers votre app après l'authentification.
+This scheme allows the 42 API to redirect the user to your app after authentication.
 
-## Structure du projet
+## Project structure
 
 ```
 src/
 ├── app/                    # Pages (file-based routing)
-│   ├── (tabs)/            # Groupe de navigation avec tabs
-│   │   ├── index.tsx      # Page de recherche
-│   │   └── logout.tsx     # Page de déconnexion
+│   ├── (tabs)/            # Tab navigation group
+│   │   ├── index.tsx      # Search page
+│   │   └── logout.tsx     # Logout page
 │   ├── profile/
-│   │   └── [profile].tsx  # Page de détail du profil
-│   ├── sign-in.tsx        # Page de connexion OAuth
-│   └── _layout.tsx        # Layout principal avec authentification
-├── components/            # Composants réutilisables
+│   │   └── [profile].tsx  # Profile detail page
+│   ├── sign-in.tsx        # OAuth login page
+│   └── _layout.tsx        # Main layout with authentication
+├── components/            # Reusable components
 │   ├── Button.tsx
 │   ├── ProfileCard.tsx
 │   └── SearchInput.tsx
-├── contexts/              # Contextes React
-│   └── AuthContext.tsx    # Gestion de l'authentification
-├── services/              # Services API
-│   ├── Api42Service.ts    # Requêtes vers l'API 42
-│   └── AuthService.ts     # Gestion OAuth et tokens
-└── types/                 # Types TypeScript
+├── contexts/              # React contexts
+│   └── AuthContext.tsx    # Authentication management
+├── services/              # API services
+│   ├── Api42Service.ts    # Requests to 42 API
+│   └── AuthService.ts     # OAuth and token management
+└── types/                 # TypeScript types
     ├── api.types.ts
-    ├── auth.ts
-    └── navigation.ts
+    └── auth.ts
 ```
 
-## Flow d'authentification OAuth
+## OAuth authentication flow
 
-1. L'utilisateur clique sur "Login with 42"
-2. L'app ouvre le navigateur vers `https://api.intra.42.fr/oauth/authorize`
-3. L'utilisateur se connecte avec son compte 42
-4. 42 redirige vers `swiftycompanion://` avec un code d'autorisation
-5. L'app échange le code contre un `access_token` et un `refresh_token`
-6. Les tokens sont stockés de manière sécurisée
-7. L'utilisateur est connecté et peut utiliser l'app
+1. User clicks on "Login with 42"
+2. App opens browser to `https://api.intra.42.fr/oauth/authorize`
+3. User logs in with their 42 account
+4. 42 redirects to `swiftycompanion://` with an authorization code
+5. App exchanges the code for an `access_token` and `refresh_token`
+6. Tokens are stored securely
+7. User is logged in and can use the app
 
-## Gestion des tokens
+## Token management
 
-- **Access Token** : Valide pendant 2 heures, utilisé pour les requêtes API
-- **Refresh Token** : Permet de renouveler l'access token sans re-connexion
-- **Stockage sécurisé** : Utilise `expo-secure-store` (iOS/Android) ou `localStorage` (Web)
-- **Auto-refresh** : Le token est automatiquement rafraîchi 5 minutes avant expiration
+- **Access Token**: Valid for 2 hours, used for API requests
+- **Refresh Token**: Allows refreshing the access token without re-login
+- **Secure storage**: Uses `expo-secure-store` (iOS/Android) or `localStorage` (Web)
+- **Auto-refresh**: Token is automatically refreshed 5 minutes before expiration
 
-## Technologies utilisées
+## Technologies used
 
-- **React Native** : Framework mobile
-- **Expo** : Plateforme de développement
-- **Expo Router** : Navigation file-based
-- **TypeScript** : Typage statique
-- **Axios** : Client HTTP
-- **expo-auth-session** : OAuth flow
-- **expo-secure-store** : Stockage sécurisé des tokens
+- **React Native**: Mobile framework
+- **Expo**: Development platform
+- **Expo Router**: File-based navigation
+- **TypeScript**: Static typing
+- **Axios**: HTTP client
+- **expo-auth-session**: OAuth flow
+- **expo-secure-store**: Secure token storage
 
-## Développement
+## Development
 
 ### Linter
 
@@ -159,44 +198,44 @@ npm run lint
 
 ### TypeScript
 
-Le projet utilise TypeScript avec des types stricts. Vérifiez les erreurs avec :
+The project uses TypeScript with strict types. Check for errors with:
 
 ```bash
 npx tsc --noEmit
 ```
 
-## Dépannage
+## Troubleshooting
 
-### "Configuration API manquante"
+### "Missing API configuration"
 
-Vérifiez que votre fichier `.env` contient bien `API_UID` et `API_SECRET`.
+Check that your `.env` file contains `API_UID` and `API_SECRET`.
 
 ### "Redirect URI mismatch"
 
-Assurez-vous que le redirect URI affiché dans l'app (en mode dev) correspond à ceux configurés dans votre application 42.
+Make sure the redirect URI displayed in the app (in dev mode) matches those configured in your 42 application.
 
-### Le navigateur ne se ferme pas après la connexion
+### Browser does not close after login
 
-Sur iOS/Android natif, vérifiez que le schéma `swiftycompanion://` est bien configuré dans votre application 42.
+On native iOS/Android, check that the `swiftycompanion://` scheme is properly configured in your 42 application.
 
-### Token expiré
+### Token expired
 
-L'app gère automatiquement le refresh des tokens. Si vous voyez cette erreur, essayez de vous déconnecter et reconnecter.
+The app automatically handles token refresh. If you see this error, try logging out and logging back in.
 
-## Projet 42
+## 42 Project
 
-Ce projet fait partie du cursus de l'école 42. Il respecte les exigences suivantes :
+This project is part of the 42 school curriculum. It meets the following requirements:
 
-- ✅ Au moins 2 vues
-- ✅ Gestion des erreurs (login non trouvé, erreur réseau, etc.)
-- ✅ Affichage des informations de login
-- ✅ Au moins 4 détails utilisateur affichés
-- ✅ Skills avec niveau et pourcentage
-- ✅ Projets complétés et échoués
-- ✅ Navigation retour vers la première vue
-- ✅ Layout flexible/responsive
-- ✅ Pas de nouveau token à chaque requête
+- At least 2 views
+- Error handling (login not found, network errors, etc.)
+- Display login information
+- At least 4 user details displayed
+- Skills with level and percentage
+- Completed and failed projects
+- Return navigation to the first view
+- Flexible/responsive layout
+- No new token for each request
 
-## Licence
+## License
 
-Projet académique - École 42
+Academic project - School 42

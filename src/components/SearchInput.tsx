@@ -1,7 +1,6 @@
-import React from 'react';
-import { StyleSheet, TextInput, View, TouchableOpacity, Text } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import React from 'react';
+import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Props = {
     onPress?: (searchText: string) => void;
@@ -38,6 +37,7 @@ export default function SearchInput({ onPress, error }: Props) {
         }
 
         setValidationError('');
+        Keyboard.dismiss();
         onPress?.(trimmedText);
     };
 
@@ -51,49 +51,54 @@ export default function SearchInput({ onPress, error }: Props) {
     const displayError = validationError || error;
 
     return (
-        <SafeAreaProvider>
-            <SafeAreaView>
-                <View>
-                    <View style={[
-                        styles.container,
-                        displayError && styles.containerError
-                    ]}>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={handleTextChange}
-                            value={text}
-                            placeholder="Search a profile..."
-                            placeholderTextColor="#999"
-                            onSubmitEditing={handleSearch}
-                        />
-                        <TouchableOpacity
-                            style={styles.searchButton}
-                            onPress={handleSearch}
-                        >
-                            <Ionicons name="search" size={24} color="#ffd33d" />
-                        </TouchableOpacity>
-                    </View>
-                    {displayError && (
-                        <View style={styles.errorContainer}>
-                            <Ionicons name="alert-circle" size={16} color="#ff4444" />
-                            <Text style={styles.errorText}>{displayError}</Text>
-                        </View>
-                    )}
+        <View style={styles.wrapper}>
+            <View style={[
+                styles.container,
+                displayError && styles.containerError
+            ]}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={handleTextChange}
+                    value={text}
+                    placeholder="Search a profile..."
+                    placeholderTextColor="#999"
+                    onSubmitEditing={handleSearch}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                />
+                <TouchableOpacity
+                    style={styles.searchButton}
+                    onPress={handleSearch}
+                >
+                    <Ionicons name="search" size={24} color="#61dafb" />
+                </TouchableOpacity>
+            </View>
+            {displayError && (
+                <View style={styles.errorContainer}>
+                    <Ionicons name="alert-circle" size={16} color="#ff4444" />
+                    <Text style={styles.errorText}>{displayError}</Text>
                 </View>
-            </SafeAreaView>
-        </SafeAreaProvider>
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    wrapper: {
+        width: '100%',
+        maxWidth: 500,
+        alignSelf: 'center',
+    },
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        margin: 12,
+        marginVertical: 12,
+        marginHorizontal: 0,
         borderWidth: 1,
-        borderColor: '#ffd33d',
+        borderColor: '#61dafb',
         borderRadius: 8,
         backgroundColor: '#25292e',
+        width: '100%',
     },
     containerError: {
         borderColor: '#ff4444',
@@ -101,18 +106,21 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         height: 40,
-        padding: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
         color: '#fff',
+        fontSize: 16,
     },
     searchButton: {
         padding: 10,
         justifyContent: 'center',
         alignItems: 'center',
+        minWidth: 44,
     },
     errorContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 12,
+        marginHorizontal: 0,
         marginTop: -8,
         marginBottom: 12,
         paddingHorizontal: 8,

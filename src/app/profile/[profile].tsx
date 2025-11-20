@@ -21,8 +21,7 @@ export default function ProfileScreen() {
         setError('');
         const userData = await Api42Service.getUserByLogin(profile);
         setUser(userData);
-      } catch (err: any) {
-        console.error('Error loading profile:', err);
+      } catch {
         setError('Failed to load profile');
       } finally {
         setLoading(false);

@@ -8,9 +8,11 @@ import { User42 } from '@/src/types/api.types';
 import Button from '@/src/components/Button';
 import ProfileCard from '@/src/components/ProfileCard';
 import SearchInput from '@/src/components/SearchInput';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function IndexScreen() {
   const router = useRouter();
+  const { userLogin } = useAuth();
   const [searchedUser, setSearchedUser] = useState<User42 | null>(null);
   const [searchError, setSearchError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -24,8 +26,6 @@ export default function IndexScreen() {
       const user = await Api42Service.getUserByLogin(login);
       setSearchedUser(user);
     } catch (error: any) {
-      console.error('Erreur lors de la recherche:', error);
-
       if (error.response?.status === 404) {
         setSearchError(`User "${login}" not found`);
       } else if (error.response?.status === 401) {
@@ -55,24 +55,26 @@ export default function IndexScreen() {
 
   return (
     <View style={styles.container}>
-        <Text style={styles.welcomeText}>Welcome! Search for a 42 profile</Text>
-        <SearchInput onPress={searchUser} error={searchError}></SearchInput>
-        {isLoading && (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>Searching profile...</Text>
-          </View>
-        )}
-        {!isLoading && searchedUser && (
-          <View style={styles.section}>
-            <ProfileCard user={searchedUser} />
-            <Button
-              label="View Profile"
-              theme='primary'
-              onPress={viewProfile}
-            />
-          </View>
-        )}
+      <Text style={styles.welcomeText}>
+        {userLogin ? `Welcome ${userLogin}!` : 'Welcome!'} Search for a 42 profile
+      </Text>
+      <SearchInput onPress={searchUser} error={searchError}></SearchInput>
+      {isLoading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={styles.loadingText}>Searching profile...</Text>
+        </View>
+      )}
+      {!isLoading && searchedUser && (
+        <View style={styles.section}>
+          <ProfileCard user={searchedUser} />
+          <Button
+            label="View Profile"
+            theme='primary'
+            onPress={viewProfile}
+          />
+        </View>
+      )}
     </View>
   );
 }

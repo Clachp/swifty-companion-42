@@ -2,13 +2,10 @@ import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
 import { Stack } from 'expo-router';
 
 function RootLayoutNav() {
-  const { isAuthenticated, isLoading, currentUser } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  console.log('RootLayoutNav - isAuthenticated:', isAuthenticated, 'isLoading:', isLoading);
-  console.log('current user: ', currentUser);
-  // Afficher un écran de chargement pendant la vérification de l'authentification
   if (isLoading) {
-    return null; // Ou un splash screen personnalisé
+    return null;
   }
 
   return (

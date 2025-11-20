@@ -7,6 +7,7 @@ const API_BASE = 'https://api.intra.42.fr';
 const TOKEN_KEY = 'access_token';
 const TOKEN_EXPIRY_KEY = 'token_expiry';
 const REFRESH_TOKEN_KEY = 'refresh_token';
+const USER_LOGIN_KEY = 'user_login';
 
 const API_UID = Constants.expoConfig?.extra?.apiClientId;
 const API_SECRET = Constants.expoConfig?.extra?.apiClientSecret;
@@ -51,7 +52,7 @@ class AuthService {
   async exchangeCodeForToken(code: string, redirectUri: string): Promise<string> {
     try {
       if (!API_UID || !API_SECRET) {
-        throw new Error('Configuration API manquante. Vérifiez votre .env');
+        throw new Error('Missing API configuration. Check your .env file');
       }
 
       const response = await axios.post<TokenResponse>(
@@ -76,23 +77,21 @@ class AuthService {
       }
 
       return access_token;
-    } catch (error: any) {
-      console.error('Erreur d\'authentification:', error.response?.data || error.message);
-      throw new Error('Échec de l\'authentification avec l\'API 42');
+    } catch {
+      throw new Error('Authentication failed with 42 API');
     }
   }
-
 
   async refreshAccessToken(): Promise<string> {
     try {
       const refreshToken = await storage.getItem(REFRESH_TOKEN_KEY);
 
       if (!refreshToken) {
-        throw new Error('Pas de refresh token disponible');
+        throw new Error('No refresh token available');
       }
 
       if (!API_UID || !API_SECRET) {
-        throw new Error('Configuration API manquante');
+        throw new Error('Missing API configuration');
       }
 
       const response = await axios.post<TokenResponse>(
@@ -116,10 +115,9 @@ class AuthService {
       }
 
       return access_token;
-    } catch (error: any) {
-      console.error(' Erreur de rafraîchissement:', error.response?.data || error.message);
+    } catch {
       await this.clearTokens();
-      throw new Error('Session expirée, veuillez vous reconnecter');
+      throw new Error('Session expired, please login again');
     }
   }
 
@@ -130,7 +128,7 @@ class AuthService {
 
       if (token && expiry) {
         const expiryTime = parseInt(expiry);
-        const bufferTime = 5 * 60 * 1000; // 5 minutes de buffer
+        const bufferTime = 5 * 60 * 1000;
 
         if (Date.now() < expiryTime - bufferTime) {
           return token;
@@ -139,9 +137,8 @@ class AuthService {
         return await this.refreshAccessToken();
       }
 
-      throw new Error('Pas de token disponible');
+      throw new Error('No token available');
     } catch (error) {
-      console.error('Erreur lors de la récupération du token:', error);
       throw error;
     }
   }
@@ -155,10 +152,23 @@ class AuthService {
     }
   }
 
+  async setUserLogin(login: string): Promise<void> {
+    await storage.setItem(USER_LOGIN_KEY, login);
+  }
+
+  async getUserLogin(): Promise<string | null> {
+    try {
+      return await storage.getItem(USER_LOGIN_KEY);
+    } catch {
+      return null;
+    }
+  }
+
   async clearTokens(): Promise<void> {
     await storage.deleteItem(TOKEN_KEY);
     await storage.deleteItem(TOKEN_EXPIRY_KEY);
     await storage.deleteItem(REFRESH_TOKEN_KEY);
+    await storage.deleteItem(USER_LOGIN_KEY);
   }
 }
 

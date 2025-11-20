@@ -44,21 +44,46 @@ class Api42Service {
   async getCurrentUser(): Promise<User42> {
     try {
       const response = await this.client.get<User42>(`/me`);
-      console.log(response.data);
       return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
 
       if (axiosError.response?.status === 404) {
-        throw this.createError('Utilisateur non trouvé', 404);
+        throw this.createError('User not found', 404);
       }
 
       if (!axiosError.response) {
-        throw this.createError('Erreur de connexion réseau', 0);
+        throw this.createError('Network error', 0);
       }
 
       throw this.createError(
-        'Erreur lors de la récupération des données',
+        'Error retrieving data',
+        axiosError.response.status
+      );
+    }
+  }
+
+  async getCurrentUserLogin(): Promise<string> {
+    try {
+      const response = await this.client.get<{ login: string }>(`/me`, {
+        params: {
+          fields: 'login'
+        }
+      });
+      return response.data.login;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response?.status === 404) {
+        throw this.createError('User not found', 404);
+      }
+
+      if (!axiosError.response) {
+        throw this.createError('Network error', 0);
+      }
+
+      throw this.createError(
+        'Error retrieving user login',
         axiosError.response.status
       );
     }
@@ -72,15 +97,15 @@ class Api42Service {
       const axiosError = error as AxiosError;
 
       if (axiosError.response?.status === 404) {
-        throw this.createError('Utilisateur non trouvé', 404);
+        throw this.createError('User not found', 404);
       }
 
       if (!axiosError.response) {
-        throw this.createError('Erreur de connexion réseau', 0);
+        throw this.createError('Network error', 0);
       }
 
       throw this.createError(
-        'Erreur lors de la récupération des données',
+        'Error retrieving data',
         axiosError.response.status
       );
     }
@@ -95,8 +120,7 @@ class Api42Service {
         },
       });
       return response.data;
-    } catch (error) {
-      console.error('Erreur de recherche:', error);
+    } catch {
       return [];
     }
   }
