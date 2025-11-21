@@ -126,11 +126,18 @@ class AuthService {
       const token = await storage.getItem(TOKEN_KEY);
       const expiry = await storage.getItem(TOKEN_EXPIRY_KEY);
 
+      // Force reduce token's expiry time to test refresh token functionality :
+      // const expiredTime = Date.now() - 1000;
+      // const expiry = await storage.setItem(TOKEN_EXPIRY_KEY, expiredTime.toString());
+
       if (token && expiry) {
         const expiryTime = parseInt(expiry);
         const bufferTime = 5 * 60 * 1000;
+    
+        // console.log('[AuthService] Time until expiry:', (expiryTime - Date.now()) / 1000, 'seconds');
 
         if (Date.now() < expiryTime - bufferTime) {
+          // console.log('[AuthService] Token still valid');
           return token;
         }
 
