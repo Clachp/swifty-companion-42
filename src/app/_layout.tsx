@@ -1,4 +1,5 @@
 import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
+import { ProfileProvider } from '@/src/contexts/ProfileContext';
 import { Stack } from 'expo-router';
 
 function RootLayoutNav() {
@@ -40,7 +41,9 @@ function RootLayoutNav() {
 export default function RootLayout() {
   return (
     <AuthProvider>
-      <RootLayoutNav />
+      <ProfileProvider>
+        <RootLayoutNav />
+      </ProfileProvider>
     </AuthProvider>
   );
 }

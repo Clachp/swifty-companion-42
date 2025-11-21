@@ -9,10 +9,12 @@ import Button from '@/src/components/Button';
 import ProfileCard from '@/src/components/ProfileCard';
 import SearchInput from '@/src/components/SearchInput';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { useProfile } from '@/src/contexts/ProfileContext';
 
 export default function IndexScreen() {
   const router = useRouter();
   const { userLogin } = useAuth();
+  const { cacheProfile } = useProfile();
   const [searchedUser, setSearchedUser] = useState<User42 | null>(null);
   const [searchError, setSearchError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,6 +27,7 @@ export default function IndexScreen() {
 
       const user = await Api42Service.getUserByLogin(login);
       setSearchedUser(user);
+      cacheProfile(user);
     } catch (error: any) {
       if (error.response?.status === 404) {
         setSearchError(`User "${login}" not found`);
@@ -56,7 +59,7 @@ export default function IndexScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>
-        {userLogin ? `Welcome ${userLogin}!` : 'Welcome!'} Search for a 42 profile
+        {userLogin ? `Welcome ${userLogin} !` : 'Welcome !'} Search for a 42 profile
       </Text>
       <SearchInput onPress={searchUser} error={searchError}></SearchInput>
       {isLoading && (
