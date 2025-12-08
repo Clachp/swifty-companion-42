@@ -36,7 +36,9 @@ npm install
 
 1. Go to [https://profile.intra.42.fr/oauth/applications](https://profile.intra.42.fr/oauth/applications)
 2. Create a new application or edit an existing one
-3. Configure the **Redirect URIs** given by the Expo cli message
+3. Add the following **Redirect URIs**:
+   - `swiftycompanion://` (for production builds)
+   - The URI shown in Expo console when using Expo Go (e.g., `exp://192.168.x.x:8081`)
 
 ### 4. Configure environment variables
 
@@ -58,7 +60,7 @@ API_SECRET=your_client_secret
 #### Local mode (standard development)
 
 ```bash
-npx expo start
+npm start
 ```
 
 Then choose your platform:
@@ -74,12 +76,27 @@ If you are on the 42 school network or a network with restrictions, use tunnel m
 npx expo start --tunnel
 ```
 
-**Specific configuration for tunnel:**
+**Important:** When using Expo Go on mobile, check the console logs for the redirect URI (e.g., `exp://192.168.x.x:8081`) and add it to your 42 OAuth application redirect URIs.
 
-1. Launch the app with `npx expo start --tunnel`
-2. Add this additional redirect URI displayed by Expo in your 42 application:
+**Note:** Tunnel mode uses a tunnel service managed by Expo (similar to ngrok) to create a public URL accessible from any network.
 
-**Important note:** Tunnel mode uses a tunnel service managed by Expo (similar to ngrok) to create a public URL accessible from any network.
+## Available Scripts
+
+### Development scripts
+- `npm start` - Start Expo development server
+- `npm run android` - Start on Android emulator
+- `npm run ios` - Start on iOS simulator
+- `npm run web` - Start on web browser
+
+### Maintenance scripts
+- `npm run clean` - Remove node_modules, cache, and Expo folders
+- `npm run reset` - Clean everything, reinstall packages, and start with cleared cache
+- `npm run reset:tunnel` - Same as reset but with tunnel mode for mobile testing
+
+### Other scripts
+- `npm run lint` - Run ESLint
+
+**When to use reset:** Use `npm run reset` or `npm run reset:tunnel` when you encounter cache issues, package conflicts, or unexplained errors.
 
 ## OAuth authentication flow
 
@@ -98,12 +115,34 @@ npx expo start --tunnel
 - **Secure storage**: Uses `expo-secure-store` (iOS/Android) or `localStorage` (Web)
 - **Auto-refresh**: Token is automatically refreshed 5 minutes before expiration
 
+## Troubleshooting
+
+### OAuth redirect issues
+If OAuth authentication fails with redirect URI errors:
+1. Check the console log for the actual redirect URI being used
+2. Ensure that exact URI is added to your 42 OAuth application
+3. For Expo Go, the URI changes based on your network (e.g., `exp://192.168.1.x:8081`)
+4. Restart the app after updating the 42 OAuth configuration
+
+### Cache or package issues
+If you encounter unexplained errors or the app won't start:
+```bash
+npm run reset        # For local development
+npm run reset:tunnel # For mobile with Expo Go
+```
+
+### Package version warnings
+If you see warnings about package versions not matching:
+```bash
+npx expo install --fix
+```
+
 ## Technologies used
 
 - **React Native**: Mobile framework
-- **Expo**: Development platform
-- **Expo Router**: File-based navigation
-- **TypeScript**: Static typing
-- **Axios**: HTTP client
-- **expo-auth-session**: OAuth flow
-- **expo-secure-store**: Secure token storage
+- **Expo**: Development platform and tooling
+- **Expo Router**: File-based navigation system
+- **TypeScript**: Static typing for JavaScript
+- **Axios**: HTTP client for API requests
+- **expo-auth-session**: OAuth 2.0 authentication flow
+- **expo-secure-store**: Secure token storage (iOS/Android keychain)
