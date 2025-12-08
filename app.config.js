@@ -6,7 +6,7 @@ export default {
     slug: "swifty-companion",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: "./assets/images/surf_stitch.png",
     scheme: "swiftycompanion",
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
@@ -25,7 +25,7 @@ export default {
     },
     web: {
       output: "static",
-      favicon: "./assets/images/favicon.png",
+      favicon: "./assets/images/surf_stitch.png",
       bundler: "metro"
     },
     plugins: [
@@ -36,9 +36,9 @@ export default {
           image: "./assets/images/splash-icon.png",
           imageWidth: 200,
           resizeMode: "contain",
-          backgroundColor: "#ffffff",
+          backgroundColor: "#25292e",
           dark: {
-            backgroundColor: "#000000"
+            backgroundColor: "#25292e"
           }
         }
       ],
