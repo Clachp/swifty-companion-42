@@ -22,6 +22,7 @@ function RootLayoutNav() {
             },
             headerTintColor: '#fff',
             headerTitle: 'Profile',
+            headerBackTitle: '',
             presentation: 'card'
           }}
         />

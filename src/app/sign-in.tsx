@@ -18,6 +18,9 @@ export default function SignIn() {
     scheme: 'swiftycompanion',
   });
 
+  // Log redirect URI for debugging
+  console.log('Redirect URI:', redirectUri);
+
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
       clientId: API_UID || '',

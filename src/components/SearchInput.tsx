@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React from 'react';
-import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 type Props = {
     onPress?: (searchText: string) => void;
@@ -51,37 +51,35 @@ export default function SearchInput({ onPress, error }: Props) {
     const displayError = validationError || error;
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.wrapper}>
-                <View style={[
-                    styles.container,
-                    displayError && styles.containerError
-                ]}>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={handleTextChange}
-                        value={text}
-                        placeholder="Search a profile..."
-                        placeholderTextColor="#999"
-                        onSubmitEditing={handleSearch}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                    />
-                    <TouchableOpacity
-                        style={styles.searchButton}
-                        onPress={handleSearch}
-                    >
-                        <Ionicons name="search" size={24} color="#61dafb" />
-                    </TouchableOpacity>
-                </View>
-                {displayError && (
-                    <View style={styles.errorContainer}>
-                        <Ionicons name="alert-circle" size={16} color="#ff4444" />
-                        <Text style={styles.errorText}>{displayError}</Text>
-                    </View>
-                )}
+        <View style={styles.wrapper}>
+            <View style={[
+                styles.container,
+                displayError && styles.containerError
+            ]}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={handleTextChange}
+                    value={text}
+                    placeholder="Search a profile..."
+                    placeholderTextColor="#999"
+                    onSubmitEditing={handleSearch}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                />
+                <TouchableOpacity
+                    style={styles.searchButton}
+                    onPress={handleSearch}
+                >
+                    <Ionicons name="search" size={24} color="#61dafb" />
+                </TouchableOpacity>
             </View>
-        </TouchableWithoutFeedback>
+            {displayError && (
+                <View style={styles.errorContainer}>
+                    <Ionicons name="alert-circle" size={16} color="#ff4444" />
+                    <Text style={styles.errorText}>{displayError}</Text>
+                </View>
+            )}
+        </View>
     );
 };
 
