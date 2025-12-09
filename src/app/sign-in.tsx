@@ -19,7 +19,7 @@ export default function SignIn() {
   });
 
   // Log redirect URI for debugging
-  console.log('Redirect URI:', redirectUri);
+  // console.log('Redirect URI:', redirectUri);
 
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
@@ -71,7 +71,15 @@ export default function SignIn() {
     }
 
     setIsLoading(true);
-    await promptAsync();
+    const result = await promptAsync();
+
+    // If user cancels immediately, the result might not trigger useEffect
+    if (result?.type === 'dismiss' || result?.type === 'cancel') {
+      setIsLoading(false);
+    } else if (result?.type === 'error') {
+      setIsLoading(false);
+      Alert.alert('Error', 'Authentication failed. Please try again.');
+    }
   };
 
   return (

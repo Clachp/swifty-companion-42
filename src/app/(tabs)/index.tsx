@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Keyboard, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Platform, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 import Api42Service from '@/src/services/Api42Service';
 import { User42 } from '@/src/types/api.types';
@@ -56,30 +56,39 @@ export default function IndexScreen() {
     }
   }
 
+  const content = (
+    <View style={styles.container}>
+      <Text style={styles.welcomeText}>
+        {userLogin ? `Welcome ${userLogin} !` : 'Welcome !'} Search for a 42 profile
+      </Text>
+      <SearchInput onPress={searchUser} error={searchError}></SearchInput>
+      {isLoading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={styles.loadingText}>Searching profile...</Text>
+        </View>
+      )}
+      {!isLoading && searchedUser && (
+        <View style={styles.section}>
+          <ProfileCard user={searchedUser} />
+          <Button
+            label="View Profile"
+            theme='primary'
+            onPress={viewProfile}
+          />
+        </View>
+      )}
+    </View>
+  );
+
+  // On web, TouchableWithoutFeedback causes issues with text input
+  if (Platform.OS === 'web') {
+    return content;
+  }
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <Text style={styles.welcomeText}>
-          {userLogin ? `Welcome ${userLogin} !` : 'Welcome !'} Search for a 42 profile
-        </Text>
-        <SearchInput onPress={searchUser} error={searchError}></SearchInput>
-        {isLoading && (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color="#fff" />
-            <Text style={styles.loadingText}>Searching profile...</Text>
-          </View>
-        )}
-        {!isLoading && searchedUser && (
-          <View style={styles.section}>
-            <ProfileCard user={searchedUser} />
-            <Button
-              label="View Profile"
-              theme='primary'
-              onPress={viewProfile}
-            />
-          </View>
-        )}
-      </View>
+      {content}
     </TouchableWithoutFeedback>
   );
 }

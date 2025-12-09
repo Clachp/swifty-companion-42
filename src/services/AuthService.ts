@@ -77,7 +77,8 @@ class AuthService {
       }
 
       return access_token;
-    } catch {
+    } catch (error: any) {
+      console.error('[AuthService] Token exchange failed:', error.response?.data || error.message);
       throw new Error('Authentication failed with 42 API');
     }
   }
